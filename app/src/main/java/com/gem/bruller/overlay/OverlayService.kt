@@ -95,7 +95,6 @@ class OverlayService : Service() {
 
     private fun showOverlay() {
         if (!Settings.canDrawOverlays(this)) {
-            updateForegroundNotification()
             Toast.makeText(this, "Allow \"Display over other apps\" first.", Toast.LENGTH_LONG).show()
             shutdown()
             return
@@ -128,7 +127,11 @@ class OverlayService : Service() {
         if (!viewAttached) {
             val added = runCatching { windowManager.addView(view, params) }.isSuccess
             if (!added) {
-                Toast.makeText(this, "Could not show the overlay.", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Could not show overlay. Please enable overlay & background pop-up permissions.",
+                    Toast.LENGTH_LONG
+                ).show()
                 shutdown()
                 return
             }
@@ -182,16 +185,23 @@ class OverlayService : Service() {
 
     private fun updateForegroundNotification() {
         val notification = buildNotification()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
+        val success = runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, notification)
+            }
+            foregroundStarted = true
+        }.isSuccess
+
+        if (!success) {
+            Toast.makeText(this, "Could not start foreground service.", Toast.LENGTH_SHORT).show()
+            shutdown()
         }
-        foregroundStarted = true
     }
 
     private fun buildNotification(): Notification {
