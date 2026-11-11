@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ruler for 8 Ball</string>
+
+    <string name="notification_channel_name">Floating ruler</string>
+    <string name="notification_channel_description">Keeps the aim ruler overlay running.</string>
+    <string name="notification_active">Ruler active — drag to aim</string>
+    <string name="notification_locked">Ruler locked — touches pass through</string>
+    <string name="notification_hidden">Ruler hidden</string>
+    <string name="action_lock">Lock</string>
+    <string name="action_unlock">Unlock</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_show">Show</string>
+    <string name="action_stop">Stop</string>
+</resources>
